@@ -1,0 +1,17 @@
+Gracias a este proyecto, aprendimos y aplicamos habilidades clave en el desarrollo de software en Python. Algunos de los aspectos destacados incluyen:
+
+1. **Manejo de archivos:** Implementamos la lectura y escritura de archivos CSV para gestionar un inventario de productos.
+
+2. **Uso de funciones:** Estructuramos el código en funciones para hacerlo más modular y reutilizable.
+
+3. **Entrada y salida de datos:** Implementamos mecanismos para recopilar datos del usuario y manejar la entrada del usuario de manera segura.
+
+4. **Ordenamiento y filtrado de datos:** Aprendimos a ordenar y filtrar listas de productos según diferentes criterios.
+
+5. **Desarrollo de menús interactivos:** Creamos un menú interactivo que permite a los usuarios seleccionar opciones.
+
+6. **Cumplimiento de estándares de programación:** Mantuvimos el código limpio y organizado siguiendo buenas prácticas.
+
+7. **Gestión de datos y control de inventario:** Implementamos un sistema completo para registrar, consultar, eliminar y modificar productos en el inventario.
+
+En conjunto, este proyecto nos proporcionó una valiosa experiencia en el desarrollo de software en Python y nos equipó con habilidades esenciales para proyectos futuros.
