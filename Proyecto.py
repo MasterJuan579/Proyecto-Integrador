@@ -200,6 +200,41 @@ def menu():
         
         else: 
             print("Elija una de las opciones del Menu")
-        
+    
+import csv
+
+def generar_reporte_ventas(Nombre_Archivo: str) -> None:
+    ventas = []
+
+    with open(Nombre_Archivo, "r", encoding="utf8") as archivo:
+        lector = csv.reader(archivo)
+        next(lector)  # Saltar la primera fila que es el encabezado
+
+        for linea in lector:
+            producto = linea[0]
+            vendedor = linea[1]
+            cantidad = float(linea[3])
+            fecha = linea[5]
+
+            venta = {
+                "Producto": producto,
+                "Vendedor": vendedor,
+                "Cantidad": cantidad,
+                "Fecha": fecha
+            }
+            ventas.append(venta)
+
+    if ventas:
+        print("\nReporte de Ventas:")
+        for venta in ventas:
+            print(f"Producto: {venta['Producto']}")
+            print(f"Vendedor: {venta['Vendedor']}")
+            print(f"Cantidad: {venta['Cantidad']}")
+            print(f"Fecha: {venta['Fecha']}")
+            print("-" * 30)
+    else:
+        print("No hay datos de ventas para generar un reporte.")
+ 
 if __name__ == "__main__":
     menu()
+    generar_reporte_ventas("Inventario.csv")
