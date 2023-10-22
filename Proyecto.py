@@ -1,5 +1,6 @@
 import csv
 
+
 def leer_csv(Nombre_Archivo: str)->list:
     lista = []
     with open(Nombre_Archivo, "r", encoding="utf8") as archivo:
@@ -9,7 +10,7 @@ def leer_csv(Nombre_Archivo: str)->list:
         return lista
                 
 
-def Pedir_Datos() -> list:
+def Pedir_Datos_Inventario() -> list:
     Nombre_Producto = input("Ingresé el Nombre del Producto: ")
     Vendedor = input("Ingresé el Nombre del Vendedor: ")
     Precio = float(input("Ingresé su precio: "))
@@ -21,9 +22,20 @@ def Pedir_Datos() -> list:
     Fecha = f"{Dia}-{Mes}-{Año}"
     Datos = [Nombre_Producto, Vendedor, Precio, Cantidad, Ventas, Fecha]
     return Datos
-    
 
-def Registrar_Producto(Nombre_archivo: str, Datos:list )-> None:
+
+def Pedir_Datos_Vendedor()-> list:
+    Nombre = input("Escriba el Nombre del Vendedor: ")
+    Edad = input("Escriba su Edad: ")
+    Telefono = input("Escriba su Telefono: ")
+    Comision = 20
+    
+    Datos = [Nombre, Edad, Telefono, Comision]
+    return Datos    
+
+
+
+def Registrar(Nombre_archivo: str, Datos:list )-> None:
     # Registra Nombre Producto, Vendedor, Precio, Cantidad Existencia, Ventas, Llegada al Almacen 
     with open(Nombre_archivo, "a", newline="\n", encoding="utf8") as archivo:
         escritor = csv.writer(archivo)
@@ -129,7 +141,12 @@ def Ordenar_Inventario(Nombre_Archivo: str) -> None:
     else:
         print("Opción no válida")
 
-
+def Imprimir_Lista(Nombre_Archivo: str)-> None:
+    datos = leer_csv(Nombre_Archivo)
+    encabezado = datos[0]
+    print(encabezado)
+    
+    # print(tabulate(d, headers= encabezado))
             
 def Modificar_Producto(Nombre_Archivo: str, Nombre: str) -> None:
     lista = leer_csv(Nombre_Archivo)
@@ -165,8 +182,54 @@ def Modificar_Producto(Nombre_Archivo: str, Nombre: str) -> None:
     else:
         print("No se ha modificado tu producto.")
 
+def menu_vendedores():
+    while (opcion := input("""
+    1. Registrar Vendedor
+    2. Consulta Vendedores
+    3. Registrar Ventas por vendedor
+    4. Cerrar programa
+    Eliga su opción: """)) != "4":
+        if opcion == "1":
+            Datos = Pedir_Datos_Vendedor()
+            Registrar("Vendedores.csv")
+        
+        elif opcion == "2":
+            Imprimir_Lista("Vendedores.csv")
+            
+        elif opcion == "3":
+            pass 
+        
+        elif opcion == "4":
+            menu_inventario()
+            
+        else: 
+            print("Eliga una de las opciones: ")
+        
+        
 
-def menu():
+def menu_principal():
+    while (opcion := input("""
+    1. Inventario
+    2. Vendedores
+    3. Reporte de Ventas
+    4. Cerrar Programa
+    
+    Introduzca su opción Porfavor: """)) != "4":
+        if opcion == "1":
+            menu_inventario()
+            
+        elif opcion == "2":
+            menu_vendedores()
+            
+        elif opcion == "3":
+            pass 
+        elif opcion == "4":
+            print("Hasta Luego")
+        else: 
+            print("Introduzca una de las opciones ")
+        
+
+def menu_inventario():
     while(opcion := input(""" MENU
     1. Registro Producto
     2. Consulta Avanzada 
@@ -178,8 +241,8 @@ def menu():
     Introduzca su opción: """)) != "6": 
         
         if opcion == "1":
-            Datos = Pedir_Datos()
-            Registrar_Producto("Inventario.csv", Datos)
+            Datos = Pedir_Datos_Inventario()
+            Registrar("Inventario.csv", Datos)
             
         elif opcion == "2":
             Nombre = input("Ingrese el nombre del producto: ")
@@ -202,4 +265,4 @@ def menu():
             print("Elija una de las opciones del Menu")
         
 if __name__ == "__main__":
-    menu()
+    menu_principal()
