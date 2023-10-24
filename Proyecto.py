@@ -92,7 +92,7 @@ def Eliminar(Nombre_Archivo: str, Nombre: str)->None:
     if opcion == "si":
         for producto in Resultado:
             lista.remove(producto)
-        with open(Nombre_Archivo, "w", encoding="utf8") as archivo:
+        with open(Nombre_Archivo, "w", newline="", encoding="utf8") as archivo:
             escritor = csv.writer(archivo)
             escritor.writerows(lista)
             print("Se ha eliminado")
@@ -144,6 +144,8 @@ def Ordenar_Inventario(Nombre_Archivo: str) -> None:
             escritor.writerows([lista[0]] + lista_ordenada)  # Agregar el encabezado
     else:
         print("Opción no válida")
+    
+    Imprimir_Lista(lista_ordenada)
 
 
 def Imprimir_Lista(Datos: list) -> None:
