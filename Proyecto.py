@@ -1,6 +1,5 @@
 import csv
 
-
 def leer_csv(Nombre_Archivo: str)->list:
     lista = []
     with open(Nombre_Archivo, "r", encoding="utf8") as archivo:
@@ -12,15 +11,23 @@ def leer_csv(Nombre_Archivo: str)->list:
 
 def Pedir_Datos_Inventario() -> list:
     Nombre_Producto = input("Ingresé el Nombre del Producto: ")
-    Vendedor = input("Ingresé el Nombre del Vendedor: ")
     Precio = float(input("Ingresé su precio: "))
-    Cantidad = float(input("Ingresé la Cantidad de Existencia: "))
-    Ventas = float(input("Ventas Totales: "))
+    while True:
+        cantidad_input = input("Ingrese la Cantidad Disponibles (número entero positivo): ")
+        if cantidad_input.isdigit():  # Comprueba si la entrada es un número entero positivo
+            Cantidad = int(cantidad_input)
+            if Cantidad >= 1:
+                break  # Si es válido, salir del bucle
+            else:
+                print("La cantidad debe ser un número entero positivo.")
+        else:
+            print("Debe ingresar un número entero válido.")
+    
     Dia = int(input("Ingresé el día en que fue Ingresado: "))
     Mes = int(input("Ingresé el Mes en que fue Ingresado: "))
     Año = int(input("Ingresé el año en que fue Ingresado: "))
     Fecha = f"{Dia}-{Mes}-{Año}"
-    Datos = [Nombre_Producto, Vendedor, Precio, Cantidad, Ventas, Fecha]
+    Datos = [Nombre_Producto, Precio, Cantidad, Fecha]
     return Datos
 
 
@@ -34,7 +41,6 @@ def Pedir_Datos_Vendedor()-> list:
     return Datos    
 
 
-
 def Registrar(Nombre_archivo: str, Datos:list )-> None:
     # Registra Nombre Producto, Vendedor, Precio, Cantidad Existencia, Ventas, Llegada al Almacen 
     with open(Nombre_archivo, "a", newline="\n", encoding="utf8") as archivo:
@@ -44,46 +50,43 @@ def Registrar(Nombre_archivo: str, Datos:list )-> None:
 
 
 def Consulta_Avanzada(Nombre_Archivo: str, Nombre: str) -> list:
+    Lista = leer_csv(Nombre_Archivo)
     Resultado = []
     Busqueda = Nombre.strip().lower()
-    
+
     with open(Nombre_Archivo, "r", encoding="utf8") as archivo:
         Lectura = csv.reader(archivo)
-        encontrado = False
         
         for fila in Lectura:
             if fila:
                 Nombre_en_fila = fila[0].strip().lower()
                 if Nombre_en_fila == Busqueda:
                     Resultado.append(fila)
-                    print(f"""
-Nombre: {fila[0]}
-Vendedor: {fila[1]}
-Precio: {fila[2]}
-Cantidad Existencia: {fila[3]}
-Ventas: {fila[4]}
-Llegada almacen: {fila[5]}
-""")
-                    encontrado = True
-                    return Resultado
-        
-        if not encontrado:
+                    break  # Rompe el bucle después de encontrar el primer resultado
+
+        if not Resultado:
             print("El producto no se encuentra en la base de datos")
-            return Resultado
+        else:
+            # Combina el encabezado y el producto encontrado en una sola lista
+            datos_a_imprimir = [Lista[0]] + Resultado
+
+            # Imprimir el encabezado y el producto encontrado en formato de celdas
+            Imprimir_Lista(datos_a_imprimir)
+
+    return Resultado
     
 
-def Eliminar_Producto(Nombre_Archivo: str)->None:
+def Eliminar(Nombre_Archivo: str, Nombre: str)->None:
     # Elimina un producto junto con todas las caracteristicas
-    Borrar = input("Ingresé el nombre del producto que desea borrar: ")
     
-    Resultado = Consulta_Avanzada(Nombre_Archivo,Borrar)
+    Resultado = Consulta_Avanzada(Nombre_Archivo, Nombre)
 
     if not Resultado:
         return
     
     lista = leer_csv(Nombre_Archivo)
     
-    opcion = input("¿Desea Eliminar este producto? si/no: ").strip().lower()
+    opcion = input("¿Desea Eliminarlo? si/no: ").strip().lower()
     print(Resultado)
     if opcion == "si":
         for producto in Resultado:
@@ -91,11 +94,11 @@ def Eliminar_Producto(Nombre_Archivo: str)->None:
         with open(Nombre_Archivo, "w", encoding="utf8") as archivo:
             escritor = csv.writer(archivo)
             escritor.writerows(lista)
-            print("Se ha eliminado tu producto :)")
+            print("Se ha eliminado")
     else:
-        print("No se ha eliminado tu producto")
+        print("No se ha eliminado")
             
-    
+               
 def Ordenar_Inventario(Nombre_Archivo: str) -> None:
     lista = leer_csv(Nombre_Archivo)
     
@@ -141,72 +144,137 @@ def Ordenar_Inventario(Nombre_Archivo: str) -> None:
     else:
         print("Opción no válida")
 
-def Imprimir_Lista(Nombre_Archivo: str)-> None:
-    datos = leer_csv(Nombre_Archivo)
-    encabezado = datos[0]
-    print(encabezado)
-    
-    # print(tabulate(d, headers= encabezado))
-            
-def Modificar_Producto(Nombre_Archivo: str, Nombre: str) -> None:
+
+def Imprimir_Lista(Datos: list) -> None:
+
+    # Inicializar la lista de longitudes máximas con un valor mínimo
+    columna_long = [float('-inf')] * len(Datos[0])
+
+    # Calcular la longitud máxima de cada columna
+    for fila in Datos:
+        for i, cell in enumerate(fila):
+            columna_long[i] = max(columna_long[i], len(str(cell)))
+
+    # Imprimir los datos en formato de celdas
+    for fila in Datos:
+        Formato_Fila = [str(cell).ljust(length) for cell, length in zip(fila, columna_long)]
+        print(" | ".join(Formato_Fila))
+
+    # Imprimir una línea divisoria
+    divisor = "+".join("-" * (length + 2) for length in columna_long)
+    print(divisor)
+
+             
+def Modificar_Producto_Inventario(Nombre_Archivo: str, Nombre: str, cantidad_vendida: int) -> None:
+    # Obtiene la lista completa de productos desde el archivo "Inventario.csv"
     lista = leer_csv(Nombre_Archivo)
+    
+    # Busca el producto a modificar
     Consulta = Consulta_Avanzada(Nombre_Archivo, Nombre)
     
     if not Consulta:
         print("No se encuentra el producto a modificar")
         return
+
+    # Calcula la nueva cantidad
+    nueva_cantidad = int(Consulta[0][2]) - cantidad_vendida
+
+    # Verifica que la nueva cantidad sea válida
+    if nueva_cantidad < 0:
+        print("Error: La cantidad vendida es mayor que la cantidad existente.")
+        return
+
+    # Actualiza la cantidad en la lista
+    Consulta[0][2] = nueva_cantidad
+
+    # Encuentra la posición del producto en la lista
+    for i, fila in enumerate(lista):
+        if fila[0] == Consulta[0][0]:
+            index = i
+            break
+
+    # Actualiza la lista con la nueva información
+    lista[index] = Consulta[0]
+
+    # Escribe la lista actualizada en el archivo "Inventario.csv"
+    with open(Nombre_Archivo, "w", encoding="utf8", newline="") as archivo:
+        escritor = csv.writer(archivo)
+        escritor.writerows(lista)
+
+    print("Se ha modificado la cantidad del producto correctamente.")
+    Imprimir_Lista(lista)
+            
     
-    print("Información del producto a modificar:")
- 
+
+def Actualizar_Ventas(Nombre_Archivo: str) -> None:
+    Vendedor = input("Ingrese el Nombre del Vendedor: ")
+    Consulta_Vendedor = Consulta_Avanzada("Vendedores.csv", Vendedor)
+    if not Consulta_Vendedor:
+        print(f"El vendedor '{Vendedor}' no se encuentra en la base de datos de vendedores.")
+        return
+
+    Producto = input("Ingrese el Nombre del Producto que vendió: ")
+    Consulta_Producto = Consulta_Avanzada("Inventario.csv", Producto)
+    if not Consulta_Producto:
+        print(f"El producto '{Producto}' no se encuentra en el inventario.")
+        return
+
+    Dia = input("Ingresé el día en que fue vendido: ")
+    Mes = input("Ingresé el Mes en que fue vendido: ")
+    Año = input("Ingresé el año en que fue vendido: ")
+    Fecha = f"{Dia}-{Mes}-{Año}"
+    while True:
+        cantidad_input = input("Ingrese la Cantidad que Vendió (número entero positivo): ")
+        if cantidad_input.isdigit():  # Comprueba si la entrada es un número entero positivo
+            Cantidad = int(cantidad_input)
+            if Cantidad >= 1:
+                break  # Si es válido, salir del bucle
+            else:
+                print("La cantidad debe ser un número entero positivo.")
+        else:
+            print("Debe ingresar un número entero válido.")
+
+    Nombre_Vendedor = Consulta_Vendedor[0][0]
+    Nombre_Producto = Consulta_Producto[0][0]
+    Datos = [Nombre_Producto, Nombre_Vendedor, Cantidad, Fecha]
+    Registrar(Nombre_Archivo, Datos)
     
-    opcion = input("¿Desea Modificar este producto? si/no: ").strip().lower()
-    if opcion == "si":
-        nuevo_nombre = input("Nuevo Nombre del Producto: ")
-        nuevo_vendedor = input("Nuevo Nombre del Vendedor: ")
-        nuevo_precio = float(input("Nuevo Precio: "))
-        nueva_cantidad = float(input("Nueva Cantidad de Existencia: "))
-        nuevas_ventas = float(input("Nuevas Ventas Totales: "))
-        nuevo_dia = int(input("Nuevo Día en que fue Ingresado: "))
-        nuevo_mes = int(input("Nuevo Mes en que fue Ingresado: "))
-        nuevo_anio = int(input("Nuevo Año en que fue Ingresado: "))
-        nueva_fecha = f"{nuevo_dia}-{nuevo_mes}-{nuevo_anio}"
-        
-        nuevo_producto = [nuevo_nombre, nuevo_vendedor, nuevo_precio, nueva_cantidad, nuevas_ventas, nueva_fecha]
-        
-        lista = [nuevo_producto if x == Consulta[0] else x for x in lista]
-        
-        with open(Nombre_Archivo, "w", encoding="utf8", newline="") as archivo:
-            escritor = csv.writer(archivo)
-            escritor.writerows(lista)
-        print("Se ha modificado tu producto correctamente.")
-    else:
-        print("No se ha modificado tu producto.")
+    Modificar_Producto_Inventario("Inventario.csv", Producto, Cantidad)
+    
+    
+    
+
 
 def menu_vendedores():
     while (opcion := input("""
     1. Registrar Vendedor
     2. Consulta Vendedores
     3. Registrar Ventas por vendedor
-    4. Cerrar programa
-    Eliga su opción: """)) != "4":
+    4. Eliminar Vendedor
+    5. Volver Menu Principal
+    Eliga su opción: """)) != "5":
         if opcion == "1":
             Datos = Pedir_Datos_Vendedor()
-            Registrar("Vendedores.csv")
+            Registrar("Vendedores.csv",Datos)
         
         elif opcion == "2":
-            Imprimir_Lista("Vendedores.csv")
+            Datos = leer_csv("Vendedores.csv")
+            Imprimir_Lista(Datos)
             
         elif opcion == "3":
-            pass 
+            Actualizar_Ventas("Ventas_Vendedores.csv")
         
         elif opcion == "4":
-            menu_inventario()
+            Nombre = input("Ingrese el Vendedor que desea Eliminar: ")
+            Eliminar("Vendedores.csv")
+        
+        elif opcion == "5":
+            menu_principal()
             
         else: 
             print("Eliga una de las opciones: ")
         
         
-
 def menu_principal():
     while (opcion := input("""
     1. Inventario
@@ -236,7 +304,7 @@ def menu_inventario():
     3. Eliminar Producto
     4. Modificar Producto
     5. Ordenar Inventario
-    6. Cerrar programa
+    6. Regresar Menu Principal
     
     Introduzca su opción: """)) != "6": 
         
@@ -249,20 +317,24 @@ def menu_inventario():
             Consulta_Avanzada("Inventario.csv", Nombre)
             
         elif opcion == "3":
-            Eliminar_Producto("Inventario.csv")
+            Nombre = input("Ingrese el Nombre del Producto que desee Eliminar: ")
+            Eliminar("Inventario.csv", Nombre)
             
         elif opcion == "4":
             Nombre = input("Ingrese el nombre del producto: ")
             Modificar_Producto("Inventario.csv", Nombre)
+            pass
         
         elif opcion == "5":
             Ordenar_Inventario("Inventario.csv")
         
         elif opcion == "6":
-            print("Hasta Pronto")
+            menu_principal()
         
         else: 
             print("Elija una de las opciones del Menu")
     
+
 if __name__ == "__main__":
     menu_principal()
+

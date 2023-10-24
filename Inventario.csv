@@ -1,6 +1,4 @@
-Nombre Producto, Vendedor, Precio, Cantidad Existencia, Ventas, Llegada al Almacen
-Donitas Glaseadas,Bimbo,30.0,400.0,100.0,10-8-2023
-IPhone 8,Apple ,9000.0,140.0,20.0,10-9-2020
-Xbox Series X,Microsoft,10999.0,67.0,56.0,22-10-2023
-Zeta,dfdf,234.0,54.0,394.0,3-5-2030
-Ñoñadas,bhjasa,10000.0,678.0,57.0,7-8-2020
+Nombre Producto, Precio, Cantidad Existencia, Llegada al Almacen
+Asus F15,24000.0,40,11-7-2020
+IPhone 8,8000.0,90,12-10-2019
+Rubik,150.0,200,4-9-2018
